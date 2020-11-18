@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace Algoritmo_Gen
 {
     class Program
     {
         static List<Individuo> salvar = new List<Individuo>();
+        static int numerox = 6; //Número a elevar al cuadrado (menor a 16)
         static void Main(string[] args)
         {
             List<Individuo> individuos = new List<Individuo>();
@@ -18,12 +16,12 @@ namespace Algoritmo_Gen
                 File.Delete(@"C: \Users\USER\Desktop\Outputs.csv");
             }
 
-            int maxGen = 15;
-            int maxInd = 25;
-            int maxSave = 2;
-            int maxCrias = 8;
-            int mutacion = 5;
-            int maxPadres = 12;
+            int maxGen = 50; //Cuantas generaciones
+            int maxInd = 30; //Individuos por generación
+            int maxSave = 2; //Cuantos salvas (no puede ser mayor a maxpadres)
+            int maxCrias = 16; //cuantos hijos
+            int mutacion = 10; //probabilidad de mutación
+            int maxPadres = 20; //Cuantos padres
 
             if (maxPadres % 2 != 0)
             {
@@ -57,7 +55,7 @@ namespace Algoritmo_Gen
                     if(mejores.Count < maxPadres)
                     {
                         mejores.Add(x);
-                        Console.WriteLine("Individuo: " + (individuos.IndexOf(x) + 1) + " Valor: " + x.x + " Binario: " + BinFormat(x.x));
+                        Console.WriteLine("Individuo: " + (individuos.IndexOf(x) + 1) + " Puntaje: " + x.puntaje + " Valor: " + x.x + " Binario: " + BinFormat(x.x));
                     }
                 }
 
@@ -94,55 +92,45 @@ namespace Algoritmo_Gen
                 }
                 File.AppendAllText(@"C:\Users\USER\Desktop\Outputs.csv", "\n");
             }
-            
+
+            Console.WriteLine("");
+            Console.WriteLine("Respuesta: " + mejores_individuos(individuos, maxSave, maxPadres)[0].x);
+
         }
-
-
-        static List<Individuo> mejores_individuos(List<Individuo> individuos, int save = 2,int devolver = 4)
+        static List<Individuo> mejores_individuos(List<Individuo> individuos, int save = 2, int padres = 4)
         {
-            List<Individuo> aux = new List<Individuo>();
-            List<int> xs = new List<int>();
-            int[] besties = new int[devolver];
-            foreach(Individuo p in individuos)
+            List<double> puntajes = new List<double>();
+            List<Individuo> mejores = new List<Individuo>();
+            foreach(Individuo i in individuos)
             {
-                xs.Add(p.x);
-            }
+                puntajes.Add(i.puntaje);
+            };
+            puntajes.Sort();
 
-            xs.Sort();
-
-            for(int i = xs.Count; i > xs.Count - devolver; i--)
-            {
-               besties[xs.Count - i] = xs[i-1];
-
-                if (salvar.Count < save)
-                {
-                    salvar.Add(new Individuo()
-                    {
-                        x = xs[i - 1]
-                    });
-                }
-
-            }
-
-            foreach (int e in besties)
+            for (int y = individuos.Count; y > individuos.Count - padres; y--)
             {
                 foreach(Individuo i in individuos)
                 {
-                    if (i.x == e && !aux.Contains(i) && aux.Count < devolver)
+                    if(i.puntaje == puntajes[y - 1] && !mejores.Contains(i))
                     {
-                        aux.Add(i);
+                        mejores.Add(i);
+                        break;
                     }
                 }
             }
-            return aux;
 
+            for(int y = 0; y < save; y++)
+            {
+                salvar.Add(mejores[y]);
+            }
+
+            return mejores;
         }
-
         static Individuo Generar_Individuo()
         {
             Random r = new Random();
             string binstring = "";
-            for(int i = 0; i < 5; i++)
+            for(int i = 0; i < 8; i++)
             {
                 binstring = binstring + r.Next(0,2).ToString();
             }
@@ -150,12 +138,12 @@ namespace Algoritmo_Gen
 
             Individuo nuevo = new Individuo()
             {
-                x =  aux 
+                x = aux,
             };
+            nuevo.puntaje = Funcion(numerox, nuevo.x);
             return nuevo;
         }
-
-       static List<Individuo> Crias(List<Individuo> padres,int MutRatio = 5, int CriasPer_Ind = 2)
+        static List<Individuo> Crias(List<Individuo> padres,int MutRatio = 5, int CriasPer_Ind = 2)
         {
 
             List<Individuo> Out = new List<Individuo>();
@@ -187,19 +175,18 @@ namespace Algoritmo_Gen
                     {
                         Ind = Mutar(Ind);
                         Console.WriteLine("mutado ///// Bin: " + Ind);
-                        Console.ReadKey();
                     }
                     Out.Add(new Individuo()
                     {
                         x = DecFormat(Ind)
                     });
+                    Out[Out.Count - 1].puntaje = Funcion(numerox, Out[Out.Count - 1].x);
                     Console.Write(DecFormat(Ind) +" (" + Ind + ") \n");
                 }
                 Console.WriteLine("");
             }
             return Out;
         }
-
         static string Mutar(string ind)
         {
             string individuo = "";
@@ -210,16 +197,15 @@ namespace Algoritmo_Gen
             individuo = individuo + ind.Substring(index);
             return individuo;
         }
-
-        static string BinFormat(int x, int length = 4)
+        static string BinFormat(int x)
         {
             string Out = "";
-            for(int pot = 8; pot >= 0; pot--)
+            for(int y = 7; y > -1; y--)
             {
-                if (x >= Math.Pow(2, pot))
+                if(x >= Math.Pow(2, y))
                 {
-                    x -= Convert.ToInt32(Math.Pow(2, pot));
                     Out = Out + "1";
+                    x = Convert.ToInt32(x - Math.Pow(2, y));
                 }
                 else
                 {
@@ -227,27 +213,9 @@ namespace Algoritmo_Gen
                 }
             }
 
-            int i = 0;
-            foreach (char c in Out)
-            {
-                if(c == '0')
-                {
-                    i++;
-                }
-                else if(c == '1')
-                {
-                    break;
-                }
-
-                if(i == length)
-                {
-                    break;
-                }
-            }
-            Out = Out.Substring(i);
             return Out;
-        }
 
+        }
         static int DecFormat(string x)
         {
             int aux = 0;
@@ -257,21 +225,19 @@ namespace Algoritmo_Gen
             }
             return aux;
         }
+        static double Funcion(int x, int indx)
+        { 
+            double aux = Math.Pow(x, 2) - indx;
+            return 1 - Math.Abs(aux)/100;
+        }
     }
-
-
-
     public class Individuo
     {
         public int x { get; set; }
+        public double puntaje { get; set; }
         public Individuo()
         {
 
-        }
-
-        public double funcion()
-        {
-            return Math.Pow(x, 2);
         }
     }
 }
