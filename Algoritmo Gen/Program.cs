@@ -7,14 +7,20 @@ namespace Algoritmo_Gen
     class Program
     {
         static List<Individuo> salvar = new List<Individuo>();
-        static int numerox = 6; //Número a elevar al cuadrado (menor a 16)
+        static int numerox;
+        static string ruta_output = @"C:\Users\USER\Desktop\Outputs.csv";
         static void Main(string[] args)
         {
             List<Individuo> individuos = new List<Individuo>();
-            if (File.Exists(@"C: \Users\USER\Desktop\Outputs.csv"))
+            if (File.Exists(ruta_output))
             {
-                File.Delete(@"C: \Users\USER\Desktop\Outputs.csv");
+                File.Delete(ruta_output);
             }
+
+
+            Console.WriteLine("Escribe un numero entre 1 y 15 para elevar al cuadrado");
+            numerox = Convert.ToInt32(Console.ReadLine());
+            Console.Clear();
 
             int maxGen = 50; //Cuantas generaciones
             int maxInd = 30; //Individuos por generación
@@ -42,9 +48,9 @@ namespace Algoritmo_Gen
             {
                 individuos.Add(Generar_Individuo());
                 Console.WriteLine("Individuo: " + individuos.Count + " Valor: " + individuos[individuos.Count - 1].x);
-                File.AppendAllText(@"C:\Users\USER\Desktop\Outputs.csv", individuos[individuos.Count - 1].x.ToString() + ",");
+                File.AppendAllText(ruta_output, individuos[individuos.Count - 1].x.ToString() + ",");
             }
-            File.AppendAllText(@"C:\Users\USER\Desktop\Outputs.csv", "\n");
+            File.AppendAllText(ruta_output, "\n");
 
             for (int Gen = 2; Gen <= maxGen; Gen++)
             {
@@ -88,9 +94,9 @@ namespace Algoritmo_Gen
                 foreach (Individuo i in individuos)
                 {
                     Console.WriteLine("Individuo: " + (individuos.IndexOf(i)+1) + " Valor: " + i.x);
-                    File.AppendAllText(@"C:\Users\USER\Desktop\Outputs.csv", i.x.ToString() + ",");
+                    File.AppendAllText(ruta_output, i.x.ToString() + ",");
                 }
-                File.AppendAllText(@"C:\Users\USER\Desktop\Outputs.csv", "\n");
+                File.AppendAllText(ruta_output, "\n");
             }
 
             Console.WriteLine("");
