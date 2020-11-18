@@ -8,6 +8,7 @@ namespace Algoritmo_Gen
     {
         static List<Individuo> salvar = new List<Individuo>();
         static int numerox;
+        static int numeroBits;
         static string ruta_output = @"C:\Users\USER\Desktop\Outputs.csv";
         static void Main(string[] args)
         {
@@ -18,16 +19,17 @@ namespace Algoritmo_Gen
             }
 
 
-            Console.WriteLine("Escribe un numero entre 0 y 31 para elevar al cuadrado");
+            Console.WriteLine("Escribe un numero entre 0 y 255 para elevar al cuadrado");
             numerox = Convert.ToInt32(Console.ReadLine());
             Console.Clear();
 
-            int maxGen = 300; //Cuantas generaciones
-            int maxInd = 100; //Individuos por generación
+            numeroBits = 16; //Cuántos bits tiene el número más grande que esperas
+            int maxGen = 100; //Cuantas generaciones
+            int maxInd = 200; //Individuos por generación
             int maxSave = 2; //Cuantos salvas (no puede ser mayor a maxpadres)
             int maxCrias = 2; //cuantos hijos
-            int mutacion = 25; //probabilidad de mutación
-            int maxPadres = 80; //Cuantos padres
+            int mutacion = 10; //probabilidad de mutación
+            int maxPadres = 100; //Cuantos padres
 
             if (maxPadres % 2 != 0)
             {
@@ -136,7 +138,7 @@ namespace Algoritmo_Gen
         {
             Random r = new Random();
             string binstring = "";
-            for(int i = 0; i < 9; i++)
+            for(int i = 0; i <= (numeroBits-1); i++)
             {
                 binstring = binstring + r.Next(0,2).ToString();
             }
@@ -206,7 +208,7 @@ namespace Algoritmo_Gen
         static string BinFormat(int x)
         {
             string Out = "";
-            for(int y = 9; y > -1; y--)
+            for(int y = (numeroBits - 1); y > -1; y--)
             {
                 if(x >= Math.Pow(2, y))
                 {
