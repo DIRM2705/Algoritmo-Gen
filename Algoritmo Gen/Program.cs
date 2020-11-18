@@ -18,16 +18,16 @@ namespace Algoritmo_Gen
             }
 
 
-            Console.WriteLine("Escribe un numero entre 1 y 15 para elevar al cuadrado");
+            Console.WriteLine("Escribe un numero entre 0 y 31 para elevar al cuadrado");
             numerox = Convert.ToInt32(Console.ReadLine());
             Console.Clear();
 
-            int maxGen = 50; //Cuantas generaciones
-            int maxInd = 30; //Individuos por generación
+            int maxGen = 300; //Cuantas generaciones
+            int maxInd = 100; //Individuos por generación
             int maxSave = 2; //Cuantos salvas (no puede ser mayor a maxpadres)
-            int maxCrias = 16; //cuantos hijos
-            int mutacion = 10; //probabilidad de mutación
-            int maxPadres = 20; //Cuantos padres
+            int maxCrias = 2; //cuantos hijos
+            int mutacion = 25; //probabilidad de mutación
+            int maxPadres = 80; //Cuantos padres
 
             if (maxPadres % 2 != 0)
             {
@@ -136,7 +136,7 @@ namespace Algoritmo_Gen
         {
             Random r = new Random();
             string binstring = "";
-            for(int i = 0; i < 8; i++)
+            for(int i = 0; i < 9; i++)
             {
                 binstring = binstring + r.Next(0,2).ToString();
             }
@@ -206,7 +206,7 @@ namespace Algoritmo_Gen
         static string BinFormat(int x)
         {
             string Out = "";
-            for(int y = 7; y > -1; y--)
+            for(int y = 9; y > -1; y--)
             {
                 if(x >= Math.Pow(2, y))
                 {
